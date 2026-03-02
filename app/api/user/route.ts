@@ -105,8 +105,6 @@ export async function POST(req: Request) {
     // Generate a secure random token
     const apiToken = `mrd_${randomBytes(32).toString('hex')}`
 
-    console.log('Generating API token for user:', userId) // Debug log
-
     // Update user with new API token
     const user = await prisma.user.update({
       where: { id: session.user.id },
