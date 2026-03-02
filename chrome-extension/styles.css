@@ -1,0 +1,407 @@
+/**
+ * Meridian Job Saver - Extension Styles
+ * Styles for popup UI and injected content elements
+ */
+
+/* ===========================================
+   POPUP STYLES
+   =========================================== */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+  background: #ffffff;
+}
+
+.popup-container {
+  width: 380px;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+.popup-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 16px;
+  text-align: center;
+}
+
+.popup-header h1 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.job-section,
+.settings-section {
+  padding: 20px;
+}
+
+.job-section h2,
+.settings-section h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #374151;
+  border-bottom: 2px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+  color: #374151;
+  font-size: 13px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+  min-height: 80px;
+  max-height: 200px;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.help-text {
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  display: block;
+}
+
+.action-section {
+  padding: 0 20px 20px;
+}
+
+.button-row {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+  background: #f3f4f6;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #e5e7eb;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.btn-ghost:hover:not(:disabled) {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.status-message {
+  margin: 16px 20px;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-message.success {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.status-message.error {
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+
+.status-message.warning {
+  background: #fef3c7;
+  color: #d97706;
+  border: 1px solid #fde68a;
+}
+
+.status-message.info {
+  background: #dbeafe;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.popup-footer {
+  padding: 16px 20px;
+  background: #f9fafb;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.popup-footer small {
+  color: #6b7280;
+  font-size: 12px;
+}
+
+/* ===========================================
+   CONTENT SCRIPT STYLES (Injected into LinkedIn)
+   =========================================== */
+
+/* Floating Save Button */
+#meridian-save-btn {
+  position: fixed;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  z-index: 10000;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.meridian-floating-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  backdrop-filter: blur(10px);
+}
+
+.meridian-floating-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.meridian-floating-btn:active {
+  transform: translateY(0);
+}
+
+.meridian-floating-btn.meridian-loading {
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.meridian-floating-btn.meridian-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+#meridian-save-btn.meridian-has-data .meridian-floating-btn {
+  animation: meridian-pulse 2s infinite;
+}
+
+@keyframes meridian-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4), 0 0 0 4px rgba(102, 126, 234, 0.1);
+  }
+}
+
+.meridian-btn-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.meridian-btn-text {
+  font-weight: 500;
+}
+
+.meridian-btn-loading {
+  animation: meridian-spin 1s linear infinite;
+}
+
+@keyframes meridian-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Notification System */
+.meridian-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10001;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  max-width: 350px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  animation: meridian-slide-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.meridian-notification-success {
+  background: rgba(16, 185, 129, 0.95);
+  color: white;
+}
+
+.meridian-notification-error {
+  background: rgba(239, 68, 68, 0.95);
+  color: white;
+}
+
+.meridian-notification-info {
+  background: rgba(59, 130, 246, 0.95);
+  color: white;
+}
+
+@keyframes meridian-slide-in {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design for Popup */
+@media (max-width: 400px) {
+  .popup-container {
+    width: 320px;
+  }
+  
+  .button-row {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+}
+
+/* Dark Mode Support (respects system preference) */
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1f2937;
+    color: #f9fafb;
+  }
+  
+  .job-section h2,
+  .settings-section h2 {
+    color: #f9fafb;
+    border-bottom-color: #374151;
+  }
+  
+  .form-group label {
+    color: #e5e7eb;
+  }
+  
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: #374151;
+    border-color: #4b5563;
+    color: #f9fafb;
+  }
+  
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+  }
+  
+  .btn-secondary {
+    background: #374151;
+    color: #e5e7eb;
+    border-color: #4b5563;
+  }
+  
+  .btn-secondary:hover:not(:disabled) {
+    background: #4b5563;
+  }
+  
+  .btn-ghost {
+    color: #9ca3af;
+    border-color: #4b5563;
+  }
+  
+  .btn-ghost:hover:not(:disabled) {
+    background: #374151;
+    color: #e5e7eb;
+  }
+  
+  .popup-footer {
+    background: #111827;
+    border-top-color: #374151;
+  }
+  
+  .help-text {
+    color: #9ca3af;
+  }
+}

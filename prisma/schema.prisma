@@ -19,6 +19,10 @@ model User {
   sessions      Session[]
   applications  Application[]
   
+  // API Access
+  apiToken      String?   @unique
+  apiTokenCreatedAt DateTime?
+  
   // User preferences
   defaultStatus   String    @default("applied")
   defaultPriority Priority  @default(MEDIUM)

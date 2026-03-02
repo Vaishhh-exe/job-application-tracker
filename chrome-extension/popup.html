@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meridian Job Saver</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="popup-container">
+    <!-- Header -->
+    <div class="popup-header">
+      <h1>📝 Meridian Job Saver</h1>
+    </div>
+
+    <!-- Job Details Section -->
+    <div id="jobSection" class="job-section">
+      <h2>Job Details</h2>
+      <div class="form-group">
+        <label for="jobTitle">Job Title *</label>
+        <input type="text" id="jobTitle" placeholder="Software Engineer" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="company">Company *</label>
+        <input type="text" id="company" placeholder="Google" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" placeholder="San Francisco, CA">
+      </div>
+      
+      <div class="form-group">
+        <label for="employmentType">Employment Type</label>
+        <select id="employmentType">
+          <option value="">Select type</option>
+          <option value="Full-time">Full-time</option>
+          <option value="Part-time">Part-time</option>
+          <option value="Contract">Contract</option>
+          <option value="Internship">Internship</option>
+          <option value="Remote">Remote</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="jobDescription">Job Description</label>
+        <textarea id="jobDescription" placeholder="Job description will be auto-extracted..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label for="jobUrl">Job URL</label>
+        <input type="url" id="jobUrl" placeholder="https://linkedin.com/jobs/...">
+      </div>
+      
+      <div class="form-group">
+        <label for="datePosted">Date Posted</label>
+        <input type="date" id="datePosted">
+      </div>
+    </div>
+
+    <!-- Settings Section -->
+    <div id="settingsSection" class="settings-section" style="display: none;">
+      <h2>Settings</h2>
+      <div class="form-group">
+        <label for="apiToken">Meridian API Token *</label>
+        <input type="password" id="apiToken" placeholder="Paste your API token here...">
+        <small class="help-text">Get your API token from Meridian Settings → API Access</small>
+      </div>
+      <div class="button-row">
+        <button id="saveTokenBtn" class="btn btn-secondary">Save Token</button>
+        <button id="backToJobBtn" class="btn btn-ghost">Back</button>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div id="actionSection" class="action-section">
+      <div class="button-row">
+        <button id="saveJobBtn" class="btn btn-primary">
+          <span class="btn-text">💾 Save to Meridian</span>
+          <span class="btn-loading" style="display: none;">⏳ Saving...</span>
+        </button>
+        <button id="settingsBtn" class="btn btn-ghost">⚙️ Settings</button>
+      </div>
+    </div>
+
+    <!-- Status Messages -->
+    <div id="statusMessage" class="status-message" style="display: none;">
+      <span id="statusText">Ready</span>
+    </div>
+
+    <!-- Footer -->
+    <div class="popup-footer">
+      <small>Extract and save jobs from LinkedIn to your Meridian tracker</small>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

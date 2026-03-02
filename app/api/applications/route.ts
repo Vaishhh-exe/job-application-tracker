@@ -10,10 +10,34 @@ const priorityOrder = { HIGH: 1, MEDIUM: 2, LOW: 3 }
 // GET all applications for the authenticated user with pagination and sorting
 export async function GET(req: Request) {
   try {
-    const session = await auth()
+    let userId: string | null = null
+
+    // Check for Bearer token first (for API access)
+    const authHeader = req.headers.get("authorization")
     
-    if (!session?.user?.id) {
-      throw new AppError("Unauthorized", 401, "UNAUTHORIZED")
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7)
+      
+      // Find user by API token
+      const user = await prisma.user.findUnique({
+        where: { apiToken: token },
+        select: { id: true }
+      })
+      
+      if (!user) {
+        throw new AppError("Invalid API token", 401, "INVALID_TOKEN")
+      }
+      
+      userId = user.id
+    } else {
+      // Fallback to session-based auth (existing functionality)
+      const session = await auth()
+      
+      if (!session?.user?.id) {
+        throw new AppError("Unauthorized", 401, "UNAUTHORIZED")
+      }
+      
+      userId = session.user.id
     }
 
     // Parse query parameters
@@ -32,7 +56,7 @@ export async function GET(req: Request) {
 
     // Build where clause
     const where: any = {
-      userId: session.user.id,
+      userId: userId,
     }
 
     if (status) {
@@ -88,10 +112,34 @@ export async function GET(req: Request) {
 // CREATE a new application
 export async function POST(req: Request) {
   try {
-    const session = await auth()
+    let userId: string | null = null
+
+    // Check for Bearer token first (for API access)
+    const authHeader = req.headers.get("authorization")
     
-    if (!session?.user?.id) {
-      throw new AppError("Unauthorized", 401, "UNAUTHORIZED")
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7)
+      
+      // Find user by API token
+      const user = await prisma.user.findUnique({
+        where: { apiToken: token },
+        select: { id: true, email: true, name: true }
+      })
+      
+      if (!user) {
+        throw new AppError("Invalid API token", 401, "INVALID_TOKEN")
+      }
+      
+      userId = user.id
+    } else {
+      // Fallback to session-based auth (existing functionality)
+      const session = await auth()
+      
+      if (!session?.user?.id) {
+        throw new AppError("Unauthorized", 401, "UNAUTHORIZED")
+      }
+      
+      userId = session.user.id
     }
 
     const body = await req.json()
@@ -101,13 +149,13 @@ export async function POST(req: Request) {
 
     // Ensure user row exists in DB (handles first-login / DB migration cases)
     await prisma.user.upsert({
-      where: { id: session.user.id },
+      where: { id: userId },
       update: {},
       create: {
-        id: session.user.id,
-        email: session.user.email!,
-        name: session.user.name ?? null,
-        image: session.user.image ?? null,
+        id: userId,
+        email: body.email || "api-user@unknown.com", // Fallback for API users
+        name: body.name || null,
+        image: null,
       },
     })
 
@@ -128,11 +176,15 @@ export async function POST(req: Request) {
         followUpDate: validatedData.followUpDate ? new Date(validatedData.followUpDate) : null,
         priority: validatedData.priority,
         tags: validatedData.tags,
-        userId: session.user.id,
+        userId: userId,
       },
     })
 
-    return NextResponse.json({ data: application }, { status: 201 })
+    return NextResponse.json({ 
+      data: application,
+      success: true,
+      id: application.id 
+    }, { status: 201 })
   } catch (error) {
     return handleApiError(error)
   }
