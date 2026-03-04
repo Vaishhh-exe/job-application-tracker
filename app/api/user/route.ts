@@ -14,24 +14,34 @@ export async function GET(req: Request) {
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.substring(7)
       
-      // Find user by API token
-      const user = await prisma.user.findUnique({
-        where: { apiToken: token },
-        select: { id: true, email: true, name: true, image: true }
-      }).catch((error) => {
-        // If apiToken field doesn't exist yet, allow temporary tokens
-        if (token === 'mrd_temp_development_token_123456789abcdef') {
-          console.log('Using temporary development token');
-          return { id: 'temp_user', email: 'temp@example.com', name: 'Temp User', image: null };
-        }
-        throw error;
-      })
-      
-      if (!user) {
-        throw new AppError("Invalid API token", 401, "INVALID_TOKEN")
+      // For now, allow demo tokens while migration completes
+      if (token === 'mrd_temp_development_token_123456789abcdef') {
+        return NextResponse.json({ 
+          data: {
+            id: 'temp_user',
+            email: 'demo@example.com', 
+            name: 'Demo User',
+            image: null
+          },
+          success: true 
+        })
       }
       
-      userId = user.id
+      // Try to find user by API token (will fail gracefully if field doesn't exist)
+      try {
+        const user = await prisma.user.findUnique({
+          where: { apiToken: token },
+          select: { id: true, email: true, name: true, image: true }
+        })
+        
+        if (!user) {
+          throw new AppError("Invalid API token", 401, "INVALID_TOKEN")
+        }
+        userId = user.id
+      } catch (error) {
+        // If apiToken field doesn't exist, return error for now
+        throw new AppError("API token authentication not available yet", 503, "SERVICE_UNAVAILABLE")
+      }
     } else {
       // Fallback to session-based auth
       const session = await auth()
@@ -41,7 +51,7 @@ export async function GET(req: Request) {
       userId = session.user.id
     }
 
-    // Fetch user data
+    // Fetch user data (without apiToken fields for now)
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -49,8 +59,6 @@ export async function GET(req: Request) {
         email: true,
         name: true,
         image: true,
-        apiToken: true,
-        apiTokenCreatedAt: true,
         defaultStatus: true,
         defaultPriority: true,
         defaultCurrency: true,
@@ -59,25 +67,6 @@ export async function GET(req: Request) {
         accentColor: true,
         createdAt: true
       }
-    }).catch((error) => {
-      // Fallback if apiToken fields don't exist yet - select without those fields
-      console.warn('API token fields not available yet, falling back:', error.message);
-      return prisma.user.findUnique({
-        where: { id: userId },
-        select: {
-          id: true,
-          email: true,
-          name: true,
-          image: true,
-          defaultStatus: true,
-          defaultPriority: true,
-          defaultCurrency: true,
-          dateFormat: true,
-          theme: true,
-          accentColor: true,
-          createdAt: true
-        }
-      });
     })
 
     if (!user) {
@@ -93,42 +82,14 @@ export async function GET(req: Request) {
   }
 }
 
-// POST - Generate new API token
+// POST - Generate new API token (temporarily disabled until migration completes)
 export async function POST(req: Request) {
   try {
-    const session = await auth()
-    
-    if (!session?.user?.id) {
-      throw new AppError("Unauthorized", 401, "UNAUTHORIZED")
-    }
-
-    // Generate a secure random token
-    const apiToken = `mrd_${randomBytes(32).toString('hex')}`
-
-    // Update user with new API token
-    const user = await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
-        apiToken,
-        apiTokenCreatedAt: new Date()
-      },
-      select: {
-        id: true,
-        apiToken: true,
-        apiTokenCreatedAt: true
-      }    }).catch((error) => {
-      // Fallback if apiToken fields don't exist yet
-      console.error('Database fields not ready yet:', error.message);
-      throw new AppError('Database migration pending. Please try again in a few minutes.', 503, 'MIGRATION_PENDING');    })
-
     return NextResponse.json({
-      data: {
-        apiToken: user.apiToken,
-        createdAt: user.apiTokenCreatedAt
-      },
-      message: "API token generated successfully",
-      success: true
-    }, { status: 201 })
+      success: false,
+      message: "API token generation temporarily disabled during database migration. Please use the Chrome extension in demo mode for now.",
+      demoToken: "mrd_temp_development_token_123456789abcdef"
+    }, { status: 503 })
   } catch (error) {
     return handleApiError(error)
   }
