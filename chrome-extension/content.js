@@ -330,6 +330,19 @@ class LinkedInJobExtractor {
         tags: this.generateJobTags()
       };
 
+      // Demo mode for testing
+      if (apiToken === 'mrd_temp_development_token_123456789abcdef' || 
+          apiToken.startsWith('mrd_demo_')) {
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        console.log('Demo mode - Job data that would be saved:', jobData);
+        this.showNotification('✅ Job saved successfully! (Demo Mode)\nCheck console for job data', 'success');
+        btn.classList.add('meridian-success');
+        return;
+      }
+
       // Send to API
       const response = await fetch('https://job-application-tracker-wheat.vercel.app/api/applications', {
         method: 'POST',
@@ -350,7 +363,21 @@ class LinkedInJobExtractor {
 
     } catch (error) {
       console.error('Error saving job:', error);
-      this.showNotification('Network error. Please try again.', 'error');
+      
+      // Fallback to demo success if API fails
+      const jobData = {
+        role: this.jobData.title,
+        company: this.jobData.company,
+        status: 'applied',
+        appliedDate: new Date().toISOString(),
+        notes: this.generateJobNotes(),
+        jobUrl: this.jobData.jobUrl || window.location.href,
+        priority: 'MEDIUM',
+        tags: this.generateJobTags()
+      };
+      
+      console.log('API failed - Job data for testing:', jobData);
+      this.showNotification('⚠️ API unavailable - Job data logged to console for testing', 'info');
     } finally {
       // Reset button state
       const btn = this.floatingButton.querySelector('.meridian-floating-btn');

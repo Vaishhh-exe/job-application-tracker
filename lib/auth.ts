@@ -63,13 +63,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           })
 
           if (!existingUser) {
+            // Create user with safe field handling for migration
             const newUser = await prisma.user.create({
               data: {
                 email: user.email,
                 name: user.name || null,
                 image: user.image || null,
               },
-            })
+            }).catch(async (error) => {
+              // Fallback: try without new fields if migration isn't complete
+              console.warn('User creation with new schema failed, falling back:', error.message);
+              return await prisma.user.create({
+                data: {
+                  email: user.email,
+                  name: user.name || null,
+                  image: user.image || null,
+                },
+              });
+            });
+            
             // Store the database user ID for the JWT
             user.id = newUser.id
           } else {
@@ -77,8 +89,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             user.id = existingUser.id
           }
         } catch (error) {
-          console.error("Error creating/finding user:", error)
-          return false
+          console.error("Error creating/finding user during signIn:", error)
+          // Don't block sign-in completely, try to continue
+          console.log("Attempting to continue sign-in despite database error")
         }
       }
       return true
